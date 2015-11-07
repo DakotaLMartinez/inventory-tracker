@@ -8,11 +8,12 @@ set :repo_url, 'git@github.com:DakotaLMartinez/inventory-tracker.git'
 # ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp
 
 # Default deploy_to directory is /var/www/my_app_name
-set :deploy_to, 'home/dakotaleedev/webapps/inventory_tracker'
+set :deploy_to, 'home/dakotaleedev/webapps/todo_app/'
 
+set :tmp_dir, '/home/dakotaleedev/tmp'
 # Default value for :scm is :git
 # set :scm, :git
-set :user, 'invuser'
+set :user, 'dakotaleedev'
 
 set :use_sudo, false
 
@@ -38,7 +39,14 @@ set :use_sudo, false
 # set :keep_releases, 5
 
 namespace :deploy do
-
+  desc 'Restart application'
+    task :restart do
+      on roles(:app), in: :sequence, wait: 5 do
+        capture("#{deploy_to}/bin/restart")
+    end
+  end
+  after 'deploy:publishing', 'deploy:restart'
+  
   after :restart, :clear_cache do
     on roles(:web), in: :groups, limit: 3, wait: 10 do
       # Here we can do anything such as:
